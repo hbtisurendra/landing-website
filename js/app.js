@@ -41,87 +41,39 @@ const sections = document.querySelectorAll('section');
 
 // build the nav
 
-const navBullder = () => {
+const navBoom = () => {
     let navUI = '';
 
     //looping over all section
     sections.forEach(section => {
         const sectionID = section.id;
         const sectionDataNav = section.dataset.nav;
-        navUI += `<li> <a class = "menu__link" href="#${sectionID}"> ${sectionDataNav}</a> </li>`
+        navUI += `<li> <a class = "menu__link" onclick="ScrollTo(${sectionID})"> ${sectionDataNav}</a> </li>`
     });
     // append all element to the navigation 
     navigation.innerHTML = navUI;
 
 };
 
-navBullder();
-// Add class 'active' to section when near top of viewport
-// getting the large value less than or equal to number
+navBoom();
 
-const offset = (section) => {
-    return Math.floor(section.getBoundingClientRect().top);
-};
-// delete the active class
-const removeActive = (section) => {
-    section.classList.remove('your-active-class');
-    section.style.cssText = "background-color:linear-gradient(0deg, rgba(255, 255, 255, .1) 0%, rgba(255, 255, 255, .2) 100%);";
-    sectionid = section.id.slice(7, 8) - 1;
-    navigation.childNodes[sectionid].style.cssText = "background-color:white;";
-};
+function ScrollTo(name) {
 
-// add the active class
-const addActive = (conditional, section) => {
-    if (conditional) {
-        section.classList.add('your-active-class');
-        section.style.cssText = "background-color:red;";
-        sectionid = section.id.slice(7, 8) - 1;
-        navigation.childNodes[sectionid].style.cssText = "background-color:red;";
-
-
-    };
-};
-
-
-// implementation of actual function
-
-const sectionActavitation = () => {
-    sections.forEach(section => {
-        const elementOffset = offset(section);
-
-        inviewport = () => elementOffset < 150 && elementOffset >= -150;
-
-        removeActive(section);
-        addActive(inviewport(), section);
-    });
-};
-
-window.addEventListener('scroll', sectionActavitation);
-
-// Scroll to anchor ID using scrollTO event
-const scrolling = () => {
-    const links = document.querySelectorAll('.navbar__menu a');
-    links.forEach(link => {
-        link.addEventListener('click', () => {
-            for (i = 0; i < sections; i++) {
-                sections[i].addEventListener("click", sectionScroll(link));
-            }
-
-        });
-    });
-
+    //init thread
+    ScrollToResolver(name);
 }
 
-scrolling();
-
-/**
- * End Main Functions
- * Begin Events
- * 
- */
-
-// Build menu 
-
-// Scroll to section on link click
-
-// Set sections as active
+function ScrollToResolver(elem) {
+    var jump = parseInt(elem.getBoundingClientRect().top * .4);
+    document.body.scrollTop += jump;
+    document.documentElement.scrollTop += jump;
+    //lastjump detects anchor unreachable, also manual scrolling to cancel animation if scroll > jump
+    if (!elem.lastjump || elem.lastjump > Math.abs(jump)) {
+        elem.lastjump = Math.abs(jump);
+        setTimeout(function() {
+            ScrollToResolver(elem);
+        }, "100");
+    } else {
+        elem.lastjump = null;
+    }
+}
